@@ -8,19 +8,24 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
                 sh 'mvn --version'
             }
         }
+        stage ('Compile') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
         stage('Test') {
             steps {
-                echo 'Testing...'
+                sh 'mvn test'
             }
         }
         stage('Integration Test') {
             steps {
-                echo 'Integration Test...'
+                sh 'mvn failsafe:integration-test failsafe:verify'
             }
         }
     }
