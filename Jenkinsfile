@@ -1,10 +1,11 @@
 pipeline {
-    agent any
+    //agent any
+    agent {{image 'maven:3.6.3'}}
 
     stages {
         stage('Build') {
             steps {
-                echo 'Building...'
+                sh 'mvn --version'
             }
         }
         stage('Test') {
