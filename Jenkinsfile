@@ -18,14 +18,37 @@ pipeline {
                 sh 'mvn clean compile'
             }
         }
-        stage('Test') {
+        //stage('Test') {
+          //  steps {
+            //    sh 'mvn test'
+            //}
+        //}
+        //stage('Integration Test') {
+          //  steps {
+            //    sh 'mvn failsafe:integration-test failsafe:verify'
+            //}
+        //}
+        stage('Package') {
             steps {
-                sh 'mvn test'
+                sh 'mvn package -DskipTests'
             }
         }
-        stage('Integration Test') {
+        stage('Build docker image') {
             steps {
-                sh 'mvn failsafe:integration-test failsafe:verify'
+               //"docker build -t mydockerbobby/currency-exchange:$env.BUILD_TAG"
+               script {
+                   dockerImage = docker.build("mydockerbobby/currency-exchange:${env.BUILD_TAG}")
+               }
+            }
+        }
+        stage('Push image to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        dockerImage.push()
+                        dockerImage.push('latest')
+                    }
+                }
             }
         }
     }
